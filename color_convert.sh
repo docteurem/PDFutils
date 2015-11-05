@@ -36,7 +36,7 @@ function graytospot {
     
     ######################################################################
     #part4: convert back to pdf using gray_to_spot.ps
-    gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="$1" $DIR/gray_to_spot.ps "$psfile"
+    gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dEncodeColorImages=false -sOutputFile="$1" $DIR/gray_to_spot.ps "$psfile"
     
     ######################################################################
     #part5: remove ps file
@@ -51,8 +51,8 @@ IFS=',' read -a layers <<< "$1"
 IFS=',' read -a input_files <<< "$2"
 unset IFS
 
-if [ $DEBUG -eq 1 ]; then echo "layers : \n"; printf '%s\n' "${layers[@]}"; fi
-if [ $DEBUG -eq 1 ]; then echo "files : \n"; printf '%s\n' "${input_files[@]}"; fi
+if [ $DEBUG -eq 1 ]; then echo "layers : "; printf '%s' "${layers[@]}"; fi
+if [ $DEBUG -eq 1 ]; then echo "files : "; printf '%s' "${input_files[@]}"; fi
 
 
 #loop on files and convert them according to layers colormodes
@@ -69,6 +69,7 @@ do
         -sColorConversionStrategy=Gray \
         -sDefaultCMYKProfile=ps_cmyk.icc \
         -dOverrideICC \
+        -dEncodeColorImages=false \
         -sOutputFile="${input_files[index]/.pdf/-tmp.pdf}" "${input_files[index]}"
         if [[ "${layers[index]}" == spot*  ]]; then
             graytospot "${input_files[index]/.pdf/-tmp.pdf}" "${layers[index]}"
@@ -82,6 +83,7 @@ do
         -sColorConversionStrategy=CMYK \
         -sDefaultCMYKProfile=ps_cmyk.icc \
         -dOverrideICC \
+        -dEncodeColorImages=false \
         -sOutputFile="${input_files[index]/.pdf/-tmp.pdf}" "${input_files[index]}"
     fi
     
